@@ -64,7 +64,7 @@ internal class Program
         Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex tondeRgx = new Regex("(?<=\\(+).+(?=\\)+)");
+        Regex tondeRgx = new Regex("((?<=\\(*.+)\\(.+\\)(?=\\)*.+|))|((?<=^\\(*)\\(.+\\)(?=\\)$))");
         if (tondeRgx.Match(or).Success)
         {
             while (tondeRgx.Match(or).Success)
@@ -76,37 +76,48 @@ internal class Program
         string operation = or.Replace("--", "+");
         operation = operation.Replace("-+", "-");
         operation = operation.Replace("+-", "-");
+        if (or.StartsWith("(") && or.EndsWith(")"))
+        {
+            or = or.Replace("(", "");
+            or = or.Replace(")", "");
+        }
+        if (operation.StartsWith("(") && operation.EndsWith(")"))
+        {
+            operation = operation.Replace("(", "");
+            operation = operation.Replace(")", "");
+        }
+
         try
         {
-            Regex exp = new Regex("(\\-|\\+)*\\d+(\\,\\d+)*\\^(\\-|\\+)*\\d+(\\,\\d+)*");
+            Regex exp = new Regex("(\\-)*\\d+(\\,\\d+)*\\^(\\-)*\\d+(\\,\\d+)*");
             foreach (string el in exp.Matches(operation).Select(x => x.Value))
             {
                 double A = Convert.ToDouble(el.Split("^")[0]);
                 double B = Convert.ToDouble(el.Split("^")[1]);
                 operation = operation.Replace(el, $"{Math.Pow(A, B)}");
             }
-            Regex product = new Regex("(\\-|\\+)*\\-*\\d+(\\,\\d+)*\\*(\\-|\\+)*\\d+(\\,\\d+)*");
+            Regex product = new Regex("(\\-)*\\-*\\d+(\\,\\d+)*\\*(\\-)*\\d+(\\,\\d+)*");
             foreach (string el in product.Matches(operation).Select(x => x.Value))
             {
                 double A = Convert.ToDouble(el.Split("*")[0]);
                 double B = Convert.ToDouble(el.Split("*")[1]);
                 operation = operation.Replace(el, $"{A * B}");
             }
-            Regex divide = new Regex("(\\-|\\+)*\\d+(\\,\\d+)*\\/(\\-|\\+)*\\d+(\\,\\d+)*");
+            Regex divide = new Regex("(\\-)*\\d+(\\,\\d+)*\\/(\\-)*\\d+(\\,\\d+)*");
             foreach (string el in divide.Matches(operation).Select(x => x.Value))
             {
                 double A = Convert.ToDouble(el.Split("/")[0]);
                 double B = Convert.ToDouble(el.Split("/")[1]);
                 operation = operation.Replace(el, $"{A / B}");
             }
-            Regex sub = new Regex("(\\-|\\+)*\\d+(\\,\\d+)*\\-(\\-|\\+)*\\d+(\\,\\d+)*");
+            Regex sub = new Regex("(\\-)*\\d+(\\,\\d+)*\\-(\\-)*\\d+(\\,\\d+)*");
             foreach (string el in sub.Matches(operation).Select(x => x.Value))
             {
                 double A = Convert.ToDouble(el.Split("-")[0]);
                 double B = Convert.ToDouble(el.Split("-")[1]);
                 operation = operation.Replace(el, $"{A - B}");
             }
-            Regex add = new Regex("(\\-|\\+)*\\d+(\\,\\d+)*\\+\\d+(\\,\\d+)*");
+            Regex add = new Regex("(\\-)*\\d+(\\,\\d+)*\\+\\d+(\\,\\d+)*");
             foreach (string el in add.Matches(operation).Select(x => x.Value))
             {
                 double A = Convert.ToDouble(el.Split("+")[0]);
@@ -120,11 +131,6 @@ internal class Program
             else
             {
                 original = original.Replace($"{or}", operation);
-            }
-            if (tondeRgx.Match(original).Success)
-            {
-                original = original.Replace($"({or})", operation);
-                original = Resolve(ref original, original);
             }
             if (senRgx.Match(original).Success)
             {
@@ -145,6 +151,11 @@ internal class Program
                 double amico = Convert.ToDouble(tanRgx.Match(original).Value.Replace("tan", ""));
                 double result = Math.Tan(amico);
                 original = original.Replace($"{tanRgx.Match(original).Value}", result.ToString());
+                original = Resolve(ref original, original);
+            }
+            if (tondeRgx.Match(original).Success)
+            {
+                original = original.Replace($"({or})", operation);
                 original = Resolve(ref original, original);
             }
             if (original == "∞")
