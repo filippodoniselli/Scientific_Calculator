@@ -70,20 +70,14 @@ internal class Program
         Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex tondeRgx = new Regex("((?<=\\()\\(*([^)]+)\\)*[^)]*(?=\\)))");
-        Regex tondeRgx2 = new Regex("((?<=\\()\\(*([^)]+)\\)*(?=\\)))");
+        Regex tondeRgx = new Regex("\\([^\\)\\(]+\\)");
+        //Regex tondeRgx2 = new Regex("((?<=\\()\\(*([^)]+)\\)*(?=\\)))");
+        string res = new Regex("\\(\\d+\\)").Match(or).Value;
         if (tondeRgx.Match(or).Success)
         {
-            while (tondeRgx.Match(or).Success)
+            while (tondeRgx.Match(or).Success && tondeRgx.Match(or).Value != or)
             {
-                if (tondeRgx.Match(or).Value.Where(x=> x == "(".ToCharArray()[0] || x == ")".ToCharArray()[0]).Count() % 2 == 0)
-                {
-                    or = tondeRgx.Match(or).Value;
-                }
-                else
-                {
-                    or = tondeRgx2.Match(or).Value;
-                }
+                or = tondeRgx.Match(or).Value;
                 or = Resolve(ref original, or);
             }
         }
