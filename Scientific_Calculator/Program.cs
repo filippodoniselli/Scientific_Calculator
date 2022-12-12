@@ -83,6 +83,10 @@ internal class Program
             or = tondeRgx.Match(or).Value;
             or = Resolve(ref original, or);
         }
+        if (or.Contains("ecce") || or == "")
+        {
+            return "";
+        }
         string operation = or.Replace("--", "+");
         operation = operation.Replace("-+", "-");
         operation = operation.Replace("+-", "-");
@@ -96,40 +100,44 @@ internal class Program
             operation = operation.Replace("(", "");
             operation = operation.Replace(")", "");
         }
-
         try
         {
             Regex exp = new Regex("(\\-)*\\d+(\\,\\d+)*\\^(\\-)*\\d+(\\,\\d+)*");
-            foreach (string el in exp.Matches(operation).Select(x => x.Value))
+            while (exp.IsMatch(operation))
             {
+                string el = exp.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("^")[0]);
                 double B = Convert.ToDouble(el.Split("^")[1]);
                 operation = operation.Replace(el, $"{Math.Pow(A, B)}");
             }
             Regex product = new Regex("(\\-)*\\-*\\d+(\\,\\d+)*\\*(\\-)*\\d+(\\,\\d+)*");
-            foreach (string el in product.Matches(operation).Select(x => x.Value))
+            while (product.IsMatch(operation))
             {
+                string el = product.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("*")[0]);
                 double B = Convert.ToDouble(el.Split("*")[1]);
                 operation = operation.Replace(el, $"{A * B}");
             }
             Regex divide = new Regex("(\\-)*\\d+(\\,\\d+)*\\/(\\-)*\\d+(\\,\\d+)*");
-            foreach (string el in divide.Matches(operation).Select(x => x.Value))
+            while (divide.IsMatch(operation))
             {
+                string el = divide.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("/")[0]);
                 double B = Convert.ToDouble(el.Split("/")[1]);
                 operation = operation.Replace(el, $"{A / B}");
             }
             Regex sub = new Regex("(\\-)*\\d+(\\,\\d+)*\\-(\\-)*\\d+(\\,\\d+)*");
-            foreach (string el in sub.Matches(operation).Select(x => x.Value))
+            while (sub.IsMatch(operation))
             {
+                string el = sub.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("-")[0]);
                 double B = Convert.ToDouble(el.Split("-")[1]);
                 operation = operation.Replace(el, $"{A - B}");
             }
             Regex add = new Regex("(\\-)*\\d+(\\,\\d+)*\\+\\d+(\\,\\d+)*");
-            foreach (string el in add.Matches(operation).Select(x => x.Value))
+            while (add.IsMatch(operation))
             {
+                string el = add.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("+")[0]);
                 double B = Convert.ToDouble(el.Split("+")[1]);
                 operation = operation.Replace(el, $"{A + B}");
