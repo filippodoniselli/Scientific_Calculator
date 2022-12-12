@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 internal class Program
@@ -64,7 +65,8 @@ internal class Program
         Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex tondeRgx = new Regex("((?<=\\(*.+)\\(.+\\)(?=\\)*.+|))|((?<=^\\(*)\\(.+\\)(?=\\)$))");
+        //Regex tondeRgx = new Regex("((?<=\\(*.+)\\(.+\\)(?=\\)*.+|))|((?<=^\\(*)\\(.+\\)(?=\\)$))");
+        Regex tondeRgx = new Regex("(?<=\\().+(?=\\))");
         if (tondeRgx.Match(or).Success)
         {
             while (tondeRgx.Match(or).Success)
@@ -134,22 +136,22 @@ internal class Program
             }
             if (senRgx.Match(original).Success)
             {
-                double amico = Convert.ToDouble(senRgx.Match(original).Value.Replace("sin", ""));
-                double result = Math.Sin(amico);
+                double amico =  Convert.ToDouble(senRgx.Match(original).Value.Replace("sin", ""));
+                double result = Math.Sin(Math.PI / 180 * amico);
                 original = original.Replace($"sin{amico}", result.ToString());
                 original = Resolve(ref original, original);
             }
             if (cosRgx.Match(original).Success)
             {
-                double amico = Convert.ToDouble(cosRgx.Match(original).Value.Replace("cos", ""));
-                double result = Math.Cos(amico);
+                double amico =  Convert.ToDouble(cosRgx.Match(original).Value.Replace("cos", ""));
+                double result = Math.Cos(Math.PI / 180 * amico);
                 original = original.Replace($"{cosRgx.Match(original).Value}", result.ToString());
                 original = Resolve(ref original, original);
             }
             if (tanRgx.Match(original).Success)
             {
                 double amico = Convert.ToDouble(tanRgx.Match(original).Value.Replace("tan", ""));
-                double result = Math.Tan(amico);
+                double result = Math.Tan(Math.PI / 180 * amico);
                 original = original.Replace($"{tanRgx.Match(original).Value}", result.ToString());
                 original = Resolve(ref original, original);
             }
