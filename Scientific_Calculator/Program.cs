@@ -1,7 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 internal class Program
 {
@@ -21,7 +18,7 @@ internal class Program
             {
                 string alfacarat = string.Join("", new Regex("[^\\d\\(\\)\\/\\*\\+\\-\\^\\,]").Matches(original).Select(x => x.Value));
                 alfacarat = new Regex("(sin)|(tan)|(cos)").Replace(alfacarat, "");
-                if (original.Length == 0 || alfacarat.Length > 0 || ! new Regex("\\d").Match(original).Success)
+                if (original.Length == 0 || alfacarat.Length > 0 || !new Regex("\\d").Match(original).Success)
                 {
                     Console.WriteLine("Inserire valori validi e/o funzioni permesse\n\nOperazione : ");
                     original = Console.ReadLine();
@@ -33,7 +30,15 @@ internal class Program
                 }
                 else
                 {
-                    Console.WriteLine($"Risultato: {Resolve(ref original, original)}\n\nOperazione : ");
+                    try
+                    {
+                        double result = Convert.ToDouble(Resolve(ref original, original));
+                        Console.WriteLine($"Risultato: {result}\n\nOperazione : ");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Incorsi errori nel calcolo. Verificare di aver inserito i vari simboli correttamente.\n\nOperazione : ");
+                    }
                     original = Console.ReadLine();
                 }
             }
@@ -73,13 +78,10 @@ internal class Program
         Regex tondeRgx = new Regex("\\([^\\)\\(]+\\)");
         //Regex tondeRgx2 = new Regex("((?<=\\()\\(*([^)]+)\\)*(?=\\)))");
         string res = new Regex("\\(\\d+\\)").Match(or).Value;
-        if (tondeRgx.Match(or).Success)
+        while (tondeRgx.Match(or).Success && tondeRgx.Match(or).Value != or)
         {
-            while (tondeRgx.Match(or).Success && tondeRgx.Match(or).Value != or)
-            {
-                or = tondeRgx.Match(or).Value;
-                or = Resolve(ref original, or);
-            }
+            or = tondeRgx.Match(or).Value;
+            or = Resolve(ref original, or);
         }
         string operation = or.Replace("--", "+");
         operation = operation.Replace("-+", "-");
@@ -142,14 +144,14 @@ internal class Program
             }
             if (senRgx.Match(original).Success)
             {
-                double amico =  Convert.ToDouble(senRgx.Match(original).Value.Replace("sin", ""));
+                double amico = Convert.ToDouble(senRgx.Match(original).Value.Replace("sin", ""));
                 double result = Math.Sin(Math.PI / 180 * amico);
                 original = original.Replace($"sin{amico}", result.ToString());
                 original = Resolve(ref original, original);
             }
             if (cosRgx.Match(original).Success)
             {
-                double amico =  Convert.ToDouble(cosRgx.Match(original).Value.Replace("cos", ""));
+                double amico = Convert.ToDouble(cosRgx.Match(original).Value.Replace("cos", ""));
                 double result = Math.Cos(Math.PI / 180 * amico);
                 original = original.Replace($"{cosRgx.Match(original).Value}", result.ToString());
                 original = Resolve(ref original, original);
