@@ -21,9 +21,9 @@ internal class Program
             {
                 string alfacarat = string.Join("", new Regex("[^\\d\\(\\)\\/\\*\\+\\-\\^\\,]").Matches(original).Select(x => x.Value));
                 alfacarat = new Regex("(sin)|(tan)|(cos)").Replace(alfacarat, "");
-                if (original.Length == 0 || alfacarat.Length > 0)
+                if (original.Length == 0 || alfacarat.Length > 0 || ! new Regex("\\d").Match(original).Success)
                 {
-                    Console.WriteLine("Inserire valori validi e funzioni permesse\n\nOperazione : ");
+                    Console.WriteLine("Inserire valori validi e/o funzioni permesse\n\nOperazione : ");
                     original = Console.ReadLine();
                 }
                 else if (new Regex("\\(|\\)").Matches(original).Count % 2 != 0)
