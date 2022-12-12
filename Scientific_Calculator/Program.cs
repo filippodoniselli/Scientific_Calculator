@@ -8,30 +8,34 @@ internal class Program
     private static void Main(string[] args)
     {
         Console.WriteLine("Questa è una calcolatrice scientifica che supporta le 4 operazioni fondamentali, l'elevamento a potenza e le funzioni trigonometriche.\nSono accettate parentesi tonde per raggruppamenti di operazioni.\nDigitare HELP per l'elenco delle operazioni effettuabili e la loro sintassi.\nUna volta terminato digitare 0.\n\nOperazione : ");
-        string original = Console.ReadLine().Replace(" ", "");
-        while (original != "0")
+        string? original = Console.ReadLine();
+        while (original != null && original.Replace(" ", "") != "0")
         {
+            original = original.Replace(" ", "");
             if (original == "HELP")
             {
                 PrintHelp();
-                original = Console.ReadLine().Replace(" ", "");
+                original = Console.ReadLine();
             }
-            string alfacarat = string.Join("", new Regex("[^\\d\\(\\)\\/\\*\\+\\-\\^\\,]").Matches(original).Select(x => x.Value));
-            alfacarat = new Regex("(sin)|(tan)|(cos)").Replace(alfacarat, "");
-            if (original.Length == 0 || alfacarat.Length > 0)
+            else if (original != null)
             {
-                Console.WriteLine("Inserire valori validi e funzioni permesse\n\nOperazione : ");
-                original = Console.ReadLine().Replace(" ", "");
-            }
-            else if (new Regex("\\(|\\)").Matches(original).Count % 2 != 0)
-            {
-                Console.WriteLine("Numero di parentesi non coerente\n\nOperazione : ");
-                original = Console.ReadLine().Replace(" ", "");
-            }
-            else
-            {
-                Console.WriteLine($"Risultato: {Resolve(ref original, original)}\n\nOperazione : ");
-                original = Console.ReadLine().Replace(" ", "");
+                string alfacarat = string.Join("", new Regex("[^\\d\\(\\)\\/\\*\\+\\-\\^\\,]").Matches(original).Select(x => x.Value));
+                alfacarat = new Regex("(sin)|(tan)|(cos)").Replace(alfacarat, "");
+                if (original.Length == 0 || alfacarat.Length > 0)
+                {
+                    Console.WriteLine("Inserire valori validi e funzioni permesse\n\nOperazione : ");
+                    original = Console.ReadLine();
+                }
+                else if (new Regex("\\(|\\)").Matches(original).Count % 2 != 0)
+                {
+                    Console.WriteLine("Numero di parentesi non coerente\n\nOperazione : ");
+                    original = Console.ReadLine();
+                }
+                else
+                {
+                    Console.WriteLine($"Risultato: {Resolve(ref original, original)}\n\nOperazione : ");
+                    original = Console.ReadLine();
+                }
             }
         }
     }
@@ -176,11 +180,11 @@ internal class Program
         }
         catch (OverflowException ex)
         {
-            return "Valore eccedente il massimo calcolabile";
+            return $"Valore eccedente il massimo calcolabile: {ex.Message}";
         }
         catch (Exception exG)
         {
-            return "Input malformato";
+            return $"Input malformato. Generata eccezione: {exG.Message}";
         }
     }
 }
