@@ -65,7 +65,6 @@ internal class Program
         Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
-        //Regex tondeRgx = new Regex("((?<=\\(*.+)\\(.+\\)(?=\\)*.+|))|((?<=^\\(*)\\(.+\\)(?=\\)$))");
         Regex tondeRgx = new Regex("(?<=\\().+(?=\\))");
         if (tondeRgx.Match(or).Success)
         {
