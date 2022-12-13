@@ -108,7 +108,8 @@ internal class Program
                 string el = exp.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("^")[0]);
                 double B = Convert.ToDouble(el.Split("^")[1]);
-                operation = operation.Replace(el, $"{Math.Pow(A, B)}");
+                double qua = Math.Pow(A, B);
+                operation = operation.Replace(el, qua>0&&A<0 ? $"+{qua}" : $"{qua}");
             }
             Regex product = new Regex("(\\-)*\\-*\\d+(\\,\\d+)*\\*(\\-)*\\d+(\\,\\d+)*");
             while (product.IsMatch(operation))
@@ -116,7 +117,8 @@ internal class Program
                 string el = product.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("*")[0]);
                 double B = Convert.ToDouble(el.Split("*")[1]);
-                operation = operation.Replace(el, $"{A * B}");
+                double qua = A*B;
+                operation = operation.Replace(el, qua > 0 && A < 0 ? $"+{qua}" : $"{qua}");
             }
             Regex divide = new Regex("(\\-)*\\d+(\\,\\d+)*\\/(\\-)*\\d+(\\,\\d+)*");
             while (divide.IsMatch(operation))
@@ -124,7 +126,8 @@ internal class Program
                 string el = divide.Match(operation).Value;
                 double A = Convert.ToDouble(el.Split("/")[0]);
                 double B = Convert.ToDouble(el.Split("/")[1]);
-                operation = operation.Replace(el, $"{A / B}");
+                double qua = A / B;
+                operation = operation.Replace(el, qua > 0 && A < 0 ? $"+{qua}" : $"{qua}");
             }
             Regex sub = new Regex("(\\-)*\\d+(\\,\\d+)*\\-(\\-)*\\d+(\\,\\d+)*");
             while (sub.IsMatch(operation))
