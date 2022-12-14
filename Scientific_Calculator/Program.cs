@@ -17,7 +17,7 @@ internal class Program
             else if (original != null)
             {
                 string alfacarat = string.Join("", new Regex("[^\\d\\(\\)\\/\\*\\+\\-\\^\\,]").Matches(original).Select(x => x.Value));
-                alfacarat = new Regex("(sin)|(tan)|(cos)").Replace(alfacarat, "");
+                alfacarat = new Regex("(sin)|(tan)|(cos)|(ln)").Replace(alfacarat, "");
                 if (original.Length == 0 || alfacarat.Length > 0 || !new Regex("\\d").Match(original).Success)
                 {
                     Console.WriteLine("Inserire valori validi e/o funzioni permesse\n\nOperazione : ");
@@ -65,6 +65,8 @@ internal class Program
             "\n---------------------\n" +
             "TANGENTE : tan(A)" +
             "\n---------------------\n\n" +
+            "LOGRATIMO NATURALE : ln(A)" +
+            "\n---------------------\n\n" + 
             "Operazione : ";
         Console.WriteLine(helper);
     }
@@ -75,6 +77,7 @@ internal class Program
         Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
+        Regex LnRgx = new Regex("ln(\\-|\\+)*\\d+(\\,\\d+)*");
         Regex tondeRgx = new Regex("\\([^\\)\\(]+\\)");
         //Regex tondeRgx2 = new Regex("((?<=\\()\\(*([^)]+)\\)*(?=\\)))");
         string res = new Regex("\\(\\d+\\)").Match(or).Value;
@@ -172,6 +175,13 @@ internal class Program
                 double amico = Convert.ToDouble(tanRgx.Match(original).Value.Replace("tan", ""));
                 double result = Math.Tan(Math.PI / 180 * amico);
                 original = original.Replace($"{tanRgx.Match(original).Value}", result.ToString());
+                original = Resolve(ref original, original);
+            }
+            if (LnRgx.Match(original).Success)
+            {
+                double amico = Convert.ToDouble(LnRgx.Match(original).Value.Replace("ln", ""));
+                double result = Math.Log(amico);
+                original = original.Replace($"{LnRgx.Match(original).Value}", result.ToString());
                 original = Resolve(ref original, original);
             }
             if (tondeRgx.Match(original).Success)
