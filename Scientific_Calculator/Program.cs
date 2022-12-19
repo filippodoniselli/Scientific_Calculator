@@ -4,7 +4,8 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Questa è una calcolatrice scientifica che supporta le 4 operazioni fondamentali, l'elevamento a potenza e le funzioni trigonometriche.\nSono accettate parentesi tonde per raggruppamenti di operazioni.\nDigitare HELP per l'elenco delle operazioni effettuabili e la loro sintassi.\nUna volta terminato digitare 0.\n\nOperazione : ");
+        PrintHelp();
+        Console.WriteLine("Sono accettate parentesi tonde per raggruppamenti di operazioni.\nDigitare HELP per l'elenco delle operazioni effettuabili e la loro sintassi.\nUna volta terminato digitare 0.\n\nOperazione : ");
         string? original = Console.ReadLine();
         while (original != null && original.Replace(" ", "") != "0")
         {
@@ -12,6 +13,7 @@ internal class Program
             if (original == "HELP")
             {
                 PrintHelp();
+                Console.WriteLine("Operazione : ");
                 original = Console.ReadLine();
             }
             else if (original != null)
@@ -64,11 +66,10 @@ internal class Program
             "COSENO : cos(A)" +
             "\n---------------------\n" +
             "TANGENTE : tan(A)" +
-            "\n---------------------\n\n" +
-            "LOGRATIMO NATURALE : ln(A)" +
-            "\n---------------------\n\n" + 
-            "Operazione : ";
-        Console.WriteLine(helper);
+            "\n---------------------\n" +
+            "LOGARITMO NATURALE : ln(A)" +
+            "\n---------------------\n\n";
+            Console.WriteLine(helper);
     }
 
     static string Resolve(ref string original, string actual)
@@ -136,9 +137,19 @@ internal class Program
             while (sub.IsMatch(operation))
             {
                 string el = sub.Match(operation).Value;
-                double A = Convert.ToDouble(el.Split("-")[0]);
-                double B = Convert.ToDouble(el.Split("-")[1]);
-                operation = operation.Replace(el, $"{A - B}");
+                if (el[0].ToString() != "-")
+                {
+                    double A = Convert.ToDouble(el.Split("-")[0]);
+                    double B = Convert.ToDouble(el.Split("-")[1]);
+                    operation = operation.Replace(el, $"{A - B}");
+                }
+                else
+                {
+                    string[] sub2 = new Regex("(\\-)*\\d+(\\,\\d+)*").Matches(el).Select(t=> t.Value).ToArray();
+                    double A = Convert.ToDouble(sub2[0]);
+                    double B = Convert.ToDouble(sub2[1]);
+                    operation = operation.Replace(el, $"{A - B}");
+                }
             }
             Regex add = new Regex("(\\-)*\\d+(\\,\\d+)*\\+\\d+(\\,\\d+)*");
             while (add.IsMatch(operation))
