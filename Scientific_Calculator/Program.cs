@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 internal class Program
 {
@@ -72,16 +73,16 @@ internal class Program
             Console.WriteLine(helper);
     }
 
+    private static Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
+    private static Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
+    private static Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
+    private static Regex LnRgx = new Regex("ln(\\-|\\+)*\\d+(\\,\\d+)*");
+    private static Regex tondeRgx = new Regex("\\([^\\)\\(]+\\)");
+
+
     static string Resolve(ref string original, string actual)
     {
         string or = actual;
-        Regex senRgx = new Regex("sin(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex cosRgx = new Regex("cos(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex tanRgx = new Regex("tan(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex LnRgx = new Regex("ln(\\-|\\+)*\\d+(\\,\\d+)*");
-        Regex tondeRgx = new Regex("\\([^\\)\\(]+\\)");
-        //Regex tondeRgx2 = new Regex("((?<=\\()\\(*([^)]+)\\)*(?=\\)))");
-        string res = new Regex("\\(\\d+\\)").Match(or).Value;
         while (tondeRgx.Match(or).Success && tondeRgx.Match(or).Value != or)
         {
             or = tondeRgx.Match(or).Value;
